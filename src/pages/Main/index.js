@@ -19,10 +19,10 @@ export default class Main extends Component {
     this.loadLocalStorage();
   }
 
-  loadLocalStorage = async () => {
+  loadLocalStorage = () => {
     const storageKey = 'repositories';
 
-    let localStorageReposirories = await JSON.parse(localStorage.getItem(storageKey));
+    let localStorageReposirories = JSON.parse(localStorage.getItem(storageKey));
 
     if (localStorageReposirories)
       this.setState({
@@ -57,19 +57,19 @@ export default class Main extends Component {
     }
   };
 
-  saveLocalStorage = async repository => {
+  saveLocalStorage = repository => {
     const storageKey = 'repositories';
 
-    let localStorageReposirories = await JSON.parse(localStorage.getItem(storageKey));
+    let localStorageReposirories = JSON.parse(localStorage.getItem(storageKey));
 
     if (localStorageReposirories)
       localStorageReposirories = [...localStorageReposirories, repository];
     else localStorageReposirories = [repository];
 
-    await localStorage.setItem(storageKey, JSON.stringify(localStorageReposirories));
+    localStorage.setItem(storageKey, JSON.stringify(localStorageReposirories));
   };
 
-  removeFromLocalStorage = async id => {
+  removeFromLocalStorage = id => {
     const storageKey = 'repositories';
 
     let index = 0;
@@ -79,7 +79,7 @@ export default class Main extends Component {
       index = repositories.findIndex((value, index, array) => value.id === id);
 
       repositories.splice(index, 1);
-      await localStorage.setItem(storageKey, JSON.stringify(repositories));
+      localStorage.setItem(storageKey, JSON.stringify(repositories));
 
       this.setState({
         repositories: [...repositories],
@@ -109,7 +109,7 @@ export default class Main extends Component {
         repositoryError: false,
       });
 
-      await localStorage.setItem(storageKey, JSON.stringify(repositories));
+      localStorage.setItem(storageKey, JSON.stringify(repositories));
 
       console.log('atualizando');
     } catch (error) {
