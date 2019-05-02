@@ -55,4 +55,14 @@ export const Repository = styled.div`
       }
     }
   }
+
+  .button {
+    height: 55px;
+    margin: 5px;
+    background: #63f5b0;
+    color: #fff;
+    border: 0;
+    font-size: 20px;
+    border-radius: 3px;
+  }
 `;

@@ -4,7 +4,7 @@ import { Container, Repository } from './styles';
 
 // import { Container } from './styles';
 
-const CompareList = ({ repositories }) => (
+const CompareList = ({ repositories, removeRepository, updateRepository }) => (
   <Container>
     {repositories.map(repository => (
       <Repository key={repository.id}>
@@ -28,6 +28,18 @@ const CompareList = ({ repositories }) => (
             {repository.lastCommit} <small>last commit</small>
           </li>
         </ul>
+        <input
+          className="button"
+          type="button"
+          onClick={() => removeRepository(repository.id)}
+          value="Remover"
+        />
+        <input
+          className="button"
+          type="button"
+          onClick={() => updateRepository(repository.full_name)}
+          value="Atualizar"
+        />
       </Repository>
     ))}
   </Container>
@@ -47,6 +59,8 @@ CompareList.propTypes = {
       lastCommit: PropTypes.string,
     }),
   ).isRequired,
+  removeRepository: PropTypes.func.isRequired,
+  updateRepository: PropTypes.func.isRequired,
 };
 
 export default CompareList;

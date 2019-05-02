@@ -15,6 +15,23 @@ export default class Main extends Component {
     repositories: [],
   };
 
+  componentDidMount() {
+    this.loadLocalStorage();
+  }
+
+  loadLocalStorage = async () => {
+    const storageKey = 'repositories';
+
+    let localStorageReposirories = await JSON.parse(localStorage.getItem(storageKey));
+
+    if (localStorageReposirories)
+      this.setState({
+        repositories: [...this.state.repositories, ...localStorageReposirories],
+        repositoryInput: '',
+        repositoryError: false,
+      });
+  };
+
   handleAddRepository = async e => {
     e.preventDefault();
 
@@ -30,6 +47,71 @@ export default class Main extends Component {
         repositoryInput: '',
         repositoryError: false,
       });
+
+      this.saveLocalStorage(repository);
+    } catch (error) {
+      console.log(error);
+      this.setState({ repositoryError: true });
+    } finally {
+      this.setState({ loading: false });
+    }
+  };
+
+  saveLocalStorage = async repository => {
+    const storageKey = 'repositories';
+
+    let localStorageReposirories = await JSON.parse(localStorage.getItem(storageKey));
+
+    if (localStorageReposirories)
+      localStorageReposirories = [...localStorageReposirories, repository];
+    else localStorageReposirories = [repository];
+
+    await localStorage.setItem(storageKey, JSON.stringify(localStorageReposirories));
+  };
+
+  removeFromLocalStorage = async id => {
+    const storageKey = 'repositories';
+
+    let index = 0;
+    let repositories = this.state.repositories;
+
+    if (repositories) {
+      index = repositories.findIndex((value, index, array) => value.id === id);
+
+      repositories.splice(index, 1);
+      await localStorage.setItem(storageKey, JSON.stringify(repositories));
+
+      this.setState({
+        repositories: [...repositories],
+        repositoryInput: '',
+        repositoryError: false,
+      });
+    }
+  };
+
+  updateRepository = async full_name => {
+    const storageKey = 'repositories';
+
+    try {
+      const { data: repository } = await api.get(`/repos/${full_name}`);
+
+      repository.lastCommit = moment(repository.pushed_at).fromNow();
+
+      let repositories = this.state.repositories;
+
+      const index = repositories.findIndex((value, index, array) => value.id === repository.id);
+
+      repositories[index] = repository;
+
+      this.setState({
+        repositories: [...repositories],
+        repositoryInput: '',
+        repositoryError: false,
+      });
+
+      await localStorage.setItem(storageKey, JSON.stringify(repositories));
+
+      console.log('atualizando');
     } catch (error) {
       console.log(error);
       this.setState({ repositoryError: true });
@@ -57,7 +139,11 @@ export default class Main extends Component {
           </button>
         </Form>
 
-        <CompareList repositories={this.state.repositories} />
+        <CompareList
+          repositories={this.state.repositories}
+          removeRepository={this.removeFromLocalStorage}
+          updateRepository={this.updateRepository}
+        />
       </Container>
     );
   }
